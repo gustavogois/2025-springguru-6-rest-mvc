@@ -10,7 +10,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -125,6 +124,15 @@ class CustomerControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.length()", is(3)));
+    }
+
+    @Test
+    void getCustomerByIdNotFound() throws Exception {
+
+        given(customerService.getCustomerById(any(UUID.class))).willThrow(NotFoundException.class);
+
+        mockMvc.perform(get(CustomerController.CUSTOMER_PATH_ID, UUID.randomUUID()))
+                .andExpect(status().isNotFound());
     }
 
     @Test
